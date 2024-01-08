@@ -11,17 +11,35 @@
     require_once 'conexion.php';
 
     $roles = findAllRoles();
+    $email = null;
+    $pwd = null;
+    $rol = null;
+    if(isset($_POST["email"])){
+        $email = $_POST["email"];
+    }
+
+    if(isset($_POST["roles"])){
+        $rolRegistro = $_POST["roles"];
+    }
+
+    if(isset($_POST["pwd1"],$_POST["pwd2"])){
+        if ($_POST["pwd1"] == $_POST["pwd2"])
+            $pwd = $_POST["pwd1"];
+    }
     ?>
     <div class="container-fluid">
-        <form>
+        <form method="post">
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" name="email" aria-describedby="emailHelp">
             </div>
             <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
+                <label for="pwd1" class="form-label">Password</label>
+                <input type="password" class="form-control" name="pwd1" id="pwd1">
+            </div>
+            <div class="mb-3">
+                <label for="pwd2" class="form-label">Repetir Password</label>
+                <input type="password" class="form-control" name="pwd2" id="pwd2">
             </div>
             <div class="mb-3 form-check">
             <div class="form-floating">
@@ -46,6 +64,10 @@
 </body>
 
 <?php
+    echo $email;
+    echo $pwd;
+    echo $rolRegistro;
+
 function findAllRoles(): array
 {
     $conProyecto = getConnection();
