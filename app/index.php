@@ -108,6 +108,51 @@ function obtener_emails(): array
     return $emails_array;
 }
 
+function crear_usuario(): bool
+        {
+            $exito = false;
+        
+            try {
+                $conProyecto = getConnection();
+            
+                $conProyecto->beginTransaction();
+
+                $insert_usuario = "insert into usuario (email, pwdhash)
+                Values(:email, :pwdhash)";
+
+                $insert_usuario_roles = "insert into usuario_rol(idUsuario, idRol)
+                Values(:idUsuario, :idRol)";
+
+                $stmt = $conProyecto->prepare($insert_usuario);
+                $stmt-> bindParam(":email", $email);
+                $stmt-> bindParam(":pwdhash", $pwd_hash);
+                $exito = $stmt->execute();
+
+
+                $usuario_id = $conProyecto->lastInsertId();
+
+    
+                    $stmt_ins_book_authors = $conProyecto->prepare($insert_book_authors);
+                    $stmt_ins_book_authors->bindParam(":book_id", $book_id);
+                    $stmt_ins_book_authors->bindParam(":author_id", $author_id);
+                    $exito = $exito && $stmt_ins_book_authors->execute();
+                
+                if ($exito) $conProyecto->commit();
+                else $conProyecto->rollBack();
+
+                // echo "<pre>";
+                // $stmt->debugDumpParams();
+                // $stmt_ins_book_authors->debugDumpParams();
+                // echo "</pre>";
+            } catch (Exception $ex) {
+                $conProyecto->rollBack();
+                $exito = false;
+                echo "Ocurrió un error al crear el libro con mensaje: " . $ex->getMessage();
+            }
+            
+            //Devolvemos el resultado de la operación
+            return $exito;
+        }
 
 ?>
 
