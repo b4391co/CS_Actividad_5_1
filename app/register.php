@@ -18,17 +18,10 @@
     $rolRegistro = null;
     if(isset($_POST["email"])){
         $email = $_POST["email"];
-        $emails = obtener_emails();
-        foreach ($emails as $key => $value) {
-            if ($value["email"] == $email){
-        ?>
-            <div class="alert alert-danger" role="alert">El email existe</div>
-        <?php
+        if (obtener_emails($email)){
+            echo '<div class="alert alert-danger" role="alert">El email existe</div>';
             $email = null;
-            break;
-            }
         }
-      
     }
 
     if(isset($_POST["roles"])){
@@ -106,21 +99,20 @@ function findAllRoles(): array
     return $array;
 }
 
-function obtener_emails(): array
-{
-    $emails_array = null;
+function obtener_emails($email){
+    $checkEmail = null;
     try {
         $conProyecto = getConnection();
-        $consulta = "SELECT email FROM usuario";
+        $consulta = "SELECT email FROM usuario WHERE email=:email";
         $stmt = $conProyecto->prepare($consulta);
-
+        $stmt->bindParam(":email", $email);
         $stmt->execute();
-        $emails_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $checkEmail = $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $ex) {
         die("Error al recuperar los emails " . $ex->getMessage());
     }
 
-    return $emails_array;
+    return $checkEmail;
 }
 
 function crear_usuario($email,$pwd_hash,$rolRegistro): bool
