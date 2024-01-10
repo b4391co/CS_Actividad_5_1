@@ -40,17 +40,16 @@
 <?php
     
     if (isset($_POST["btn_login"]) && isset($email) && isset($pwd)) {
-        $pwd_hash = getHash($email,$pwd);
-
-        if(password_verify($pwd,$pwd_hash)){
-    ?>
-            <div class="alert alert-success" role="alert">Inicio de sesion correcto</div>
-    <?php
+    if (getHash($email, $pwd)) {
+        $pwd_hash = getHash($email, $pwd);
+        if (password_verify($pwd, $pwd_hash)) {
+            echo '<div class="alert alert-success" role="alert">Inicio de sesion correcto</div>';
             var_dump(getRolesUsuario($email));
-        }else{
-    ?>
-            <div class="alert alert-danger" role="alert">Inicio de sesion incorrecto</div>
-    <?php
+        } else {
+            echo '<div class="alert alert-danger" role="alert">Inicio de sesion incorrecto</div>';
+        }
+    }else{
+        echo '<div class="alert alert-danger" role="alert">Inicio de sesion incorrecto</div>';
     }
     ?>
     <?php 
@@ -65,10 +64,11 @@ function getHash($email,$pwd){
             $stmt-> bindParam(":email", $email);
             $stmt->execute();
             $pwd_hash = $stmt->fetch(PDO::FETCH_ASSOC);
+            return(isset($pwd_hash["pwdhash"]))? $pwd_hash["pwdhash"]: null;
         } catch (PDOException $ex) {
             die("Error: " . $ex->getMessage());
         }
-        return $pwd_hash["pwdhash"];
+        
 }
 
 function getRolesUsuario($email){
@@ -89,7 +89,6 @@ function getRolesUsuario($email){
     }
     return $rol;
 }
-
 ?>
 
 </html>
